@@ -1,32 +1,35 @@
 package com.example.demo;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class MessageController {
-    private int count = 0;
-    ArrayList<Message> dataArr = new ArrayList<>();
+    public HashMap<String, Message> messages = new HashMap<>();
     Data data = new Data();
 
-    @PostMapping("/messages")
-    void postMessage(@RequestBody Message message) {
-        if (message.getText().equals("Hello")) {
-            count += 1;
-            Message m = new Message(message.getText(), count);
-            dataArr.add(m);
-            data.setData(dataArr);
-        }
-    }
-
     @GetMapping("/messages")
-    Data getMessages() {
+    public Data getMessages() {
+        data.setData(new ArrayList<>(messages.values()));
         return data;
     }
 
+    @PostMapping("/messages")
+    public void postMessage(@RequestBody Message message) {
+        if (!messages.containsKey(message.getText())) {
+            message.setCount(1);
+        } else {
+            int count = messages.get(message.getText()).getCount();
+            message.setCount(count + 1);
+        }
+        messages.put(message.getText(), message);
+    }
 }

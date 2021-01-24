@@ -3,7 +3,7 @@ package com.example.demo;
 import java.util.ArrayList;
 
 public class Data {
-    private ArrayList<Message> data = new ArrayList<>();
+    ArrayList<Message> data = new ArrayList<>();
 
     public ArrayList<Message> getData() {
         return data;
