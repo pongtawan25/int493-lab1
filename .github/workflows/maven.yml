@@ -42,10 +42,10 @@ jobs:
           target: "./"
       - name: Start app via ssh
         if: always()
-        uses: garygrossgarten/github-action-ssh@release
+        uses: fifsky/ssh-action@master
         with:
           command: |
             cd target/ && nohup java -jar demo-0.0.1-SNAPSHOT.jar > /dev/null &
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          user: ${{ secrets.SSH_USER }}
+          pass: ${{ secrets.SSH_PASSWORD }}
