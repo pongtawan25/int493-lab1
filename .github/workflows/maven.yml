@@ -18,14 +18,20 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{secrets.AZURE_CREDENTIALS}}
-    - name: Clear Resource
+    - name: Delete VM
       run: |
         az vm delete -g group-project -n lab1-vm --yes
+    - name: Delete Disk
+      run: |
+        az disk delete --name lab1-vm_DataDisk_0 --resource-group group-project
+    - name: Delete Resource Group
+      run: |
+        az group delete -n group-project
     - name: Create Resource Group
       run: |
         az group create --name group-project \
           --location southeastasia
-    - name: Create disk
+    - name: Create Disk
       run: |
         az disk create --name lab1-vm_DataDisk_0 \
           --resource-group group-project \
@@ -40,12 +46,6 @@ jobs:
             --admin-password ${{secrets.SSH_PASSWORD}} \
             --attach-data-disks lab1-vm_DataDisk_0 \
             --size Standard_B1s
-    - name: Open Port
-      run: |
-        az vm open-port -g group-project -n lab1-vm \
-            --port 8080 \
-            --priority 100 \
-            --name Port_8080
 
   deploy-application:
     runs-on: ubuntu-latest
