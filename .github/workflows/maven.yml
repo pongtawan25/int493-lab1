@@ -14,7 +14,7 @@ jobs:
   setup-server:
     runs-on: ubuntu-latest
     env:
-      RESOURCE_GROUP: group-project
+      RESOURCE_GROUP: project-int493
       DISK_NAME: lab1-vm_DataDisk_0
       VM_SIZE: Standard_B1s
       VM_NAME: lab1-vm
@@ -50,8 +50,6 @@ jobs:
   deploy-application:
     runs-on: ubuntu-latest
     needs: [setup-server]
-    env:
-      PUBLIC_IP: az vm show -d -g group-project -n lab1-vm --query publicIps -o tsv
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -63,19 +61,19 @@ jobs:
       - name: Deploy package to server
         uses: appleboy/scp-action@master
         with:
-          host: ${{secrets.HOST}}
-          username: ${{secrets.SSH_USER}}
-          password: ${{secrets.SSH_PASSWORD}}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
           source: "target/demo-0.0.1-SNAPSHOT.jar"
           target: "."
-      - name: Start app via ssh
+      - name: Start Application
         uses: garygrossgarten/github-action-ssh@release
         with:
           command: |
             sudo apt install default-jre -y
-            mv target/*.jar web-api.jar
             kill $(pidof java)
-            java -jar web-api.jar > app.log 2>&1 </dev/null &
-          host: $PUBLIC_IP
+            cd target
+            java -jar demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 </dev/null &
+          host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
