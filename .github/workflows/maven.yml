@@ -11,38 +11,9 @@ on:
 
 jobs:
 
-  setup-server:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
-    - name: Delete VM
-      run: |
-        az vm delete -g group-project -n lab1-vm -y
-    - name: Delete Disk
-      run: |
-        az disk delete --name lab1-vm_DataDisk_0 --resource-group group-project -y
-    - name: Create Disk
-      run: |
-        az disk create --name lab1-vm_DataDisk_0 \
-          --resource-group group-project \
-          --size-gb 8
-    - name: Create VM
-      run: |
-        az vm create \
-            --resource-group group-project \
-            --name lab1-vm \
-            --image Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202101191 \
-            --admin-username ${{secrets.SSH_USER}} \
-            --admin-password ${{secrets.SSH_PASSWORD}} \
-            --attach-data-disks lab1-vm_DataDisk_0 \
-            --size Standard_B1s
-
   deploy-application:
     runs-on: ubuntu-latest
-    needs: [setup-server]
+#    needs: [setup-server]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -54,9 +25,9 @@ jobs:
       - name: Deploy package to server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          host: ${{secrets.HOST}}
+          username: ${{secrets.SSH_USER}}
+          password: ${{secrets.SSH_PASSWORD}}
           source: "target/demo-0.0.1-SNAPSHOT.jar"
           target: "."
       - name: Start app via ssh
