@@ -24,13 +24,6 @@ jobs:
     - name: Delete Disk
       run: |
         az disk delete --name lab1-vm_DataDisk_0 --resource-group group-project -y
-    - name: Delete Resource Group
-      run: |
-        az group delete -n group-project -y
-    - name: Create Resource Group
-      run: |
-        az group create --name group-project \
-          --location southeastasia
     - name: Create Disk
       run: |
         az disk create --name lab1-vm_DataDisk_0 \
