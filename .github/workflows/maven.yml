@@ -11,9 +11,47 @@ on:
 
 jobs:
 
+  setup-server:
+    runs-on: ubuntu-latest
+    env:
+      RESOURCE_GROUP: group-project
+      DISK_NAME: lab1-vm_DataDisk_0
+      VM_SIZE: Standard_B1s
+      VM_NAME: lab1-vm
+      VM_IMAGE: Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202101191
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: Delete VM
+        run: |
+          az vm delete -g $RESOURCE_GROUP -n $VM_NAME -y
+      - name: Delete Disk
+        run: |
+          az disk delete --name $DISK_NAME --resource-group $RESOURCE_GROUP -y
+      - name: Create Disk
+        run: |
+          az disk create --name $DISK_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --size-gb 8
+      - name: Create VM
+        run: |
+          az vm create \
+              --resource-group $RESOURCE_GROUP \
+              --name $VM_NAME \
+              --image $VM_IMAGE \
+              --admin-username ${{secrets.SSH_USER}} \
+              --admin-password ${{secrets.SSH_PASSWORD}} \
+              --attach-data-disks $DISK_NAME \
+              --size $VM_SIZE
+
   deploy-application:
     runs-on: ubuntu-latest
-#    needs: [setup-server]
+    needs: [setup-server]
+    env:
+      PUBLIC_IP: az vm show -d -g group-project -n lab1-vm --query publicIps -o tsv
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -38,6 +76,6 @@ jobs:
             mv target/*.jar web-api.jar
             kill $(pidof java)
             java -jar web-api.jar > app.log 2>&1 </dev/null &
-          host: ${{ secrets.HOST }}
+          host: $PUBLIC_IP
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
