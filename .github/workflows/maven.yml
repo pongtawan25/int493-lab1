@@ -21,9 +21,12 @@ jobs:
     - name: Delete VM
       run: |
         az vm delete -g group-project -n lab1-vm --yes
+    - name: Delete Disk
+      run: |
+        az disk delete --name lab1-vm_DataDisk_0 --resource-group group-project --yes
     - name: Delete Resource Group
       run: |
-        az group delete -n group-project
+        az group delete -n group-project --yes
     - name: Create Resource Group
       run: |
         az group create --name group-project \
