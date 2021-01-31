@@ -34,6 +34,7 @@ jobs:
         uses: garygrossgarten/github-action-ssh@release
         with:
           command: |
+            sudo apt install default-jre -y
             mv target/*.jar web-api.jar
             kill $(pidof java)
             java -jar web-api.jar > app.log 2>&1 </dev/null &
