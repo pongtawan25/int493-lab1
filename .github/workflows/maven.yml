@@ -60,18 +60,18 @@ jobs:
         az network dns record-set a delete \
           --name @ \
           --resource-group $RESOURCE_GROUP \
-          --zone-name ${{ secrets.HOSTNAME }} -y
+          --zone-name ${{ secrets.HOST }} -y
     - name: Create a new DNS record
       run: |
         IP=$(az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv)
         az network dns record-set a create \
           --name @ \
           --resource-group $RESOURCE_GROUP \
-          --zone-name ${{ secrets.HOSTNAME }} -o none
+          --zone-name ${{ secrets.HOST }} -o none
         az network dns record-set a add-record --ipv4-address $IP \
           --record-set-name @ \
           --resource-group $RESOURCE_GROUP \
-          --zone-name ${{ secrets.HOSTNAME }} \
+          --zone-name ${{ secrets.HOST }} \
           --ttl 300 -o none
 
   deploy-application:
