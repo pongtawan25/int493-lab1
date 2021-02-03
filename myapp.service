@@ -1,0 +1,10 @@
+[Unit]
+Description=myapp
+After=syslog.target
+
+[Service]
+ExecStart=/usr/bin/java -jar /home/azureuser/target/demo-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
