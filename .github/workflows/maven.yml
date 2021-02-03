@@ -19,8 +19,7 @@ jobs:
       VM_NAME: lab1-vm
       VM_IMAGE: Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202101191
     steps:
-    - name: Login to Azure
-      uses: azure/login@v1
+    - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Delete VM
